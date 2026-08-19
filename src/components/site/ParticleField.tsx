@@ -14,13 +14,24 @@ export function ParticleField({ shape }: { shape: "handshake" | "cloud" }) {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const shapes: Record<string, Pt[]> = {
-      handshake: handshakeShape(COUNT),
-      cloud: cloudShape(COUNT),
+    const flatten = (pts: Pt[]) => {
+      const arr = new Float32Array(COUNT * 3);
+      for (let i = 0; i < COUNT; i++) {
+        const p = pts[i] ?? ([0, 0, 0] as Pt);
+        arr[i * 3] = p[0];
+        arr[i * 3 + 1] = p[1];
+        arr[i * 3 + 2] = p[2];
+      }
+      return arr;
+    };
+
+    const shapes: Record<string, Float32Array> = {
+      handshake: flatten(handshakeShape(COUNT)),
+      cloud: flatten(cloudShape(COUNT)),
     };
 
     // current animated positions start from the initial shape
-    const cur: Pt[] = shapes[targetRef.current].map((p) => [p[0], p[1], p[2]]);
+    const cur = new Float32Array(shapes[targetRef.current] ?? shapes["cloud"]!);
     const jitter = new Float32Array(COUNT * 3);
     for (let i = 0; i < COUNT * 3; i++) jitter[i] = Math.random() * Math.PI * 2;
 
@@ -45,7 +56,7 @@ export function ParticleField({ shape }: { shape: "handshake" | "cloud" }) {
       last = now;
       if (!reduce) yaw += dt * 0.32;
 
-      const target = shapes[targetRef.current];
+      const target = shapes[targetRef.current] ?? shapes["cloud"]!;
       const w = canvas.width;
       const h = canvas.height;
       const scale = Math.min(w, h) * 0.42;
@@ -60,21 +71,16 @@ export function ParticleField({ shape }: { shape: "handshake" | "cloud" }) {
       ctx.clearRect(0, 0, w, h);
       const t = now / 1000;
 
+      const ease = 1 - Math.pow(0.0025, dt);
       for (let i = 0; i < COUNT; i++) {
-        const tp = target[i];
-        const p = cur[i];
-        const ease = 1 - Math.pow(0.0025, dt);
-        p[0] += (tp[0] - p[0]) * ease;
-        p[1] += (tp[1] - p[1]) * ease;
-        p[2] += (tp[2] - p[2]) * ease;
+        const i3 = i * 3;
+        cur[i3] += (target[i3]! - cur[i3]!) * ease;
+        cur[i3 + 1] += (target[i3 + 1]! - cur[i3 + 1]!) * ease;
+        cur[i3 + 2] += (target[i3 + 2]! - cur[i3 + 2]!) * ease;
 
-        const jx = Math.sin(t * 0.9 + jitter[i * 3]) * 0.012;
-        const jy = Math.sin(t * 1.1 + jitter[i * 3 + 1]) * 0.012;
-        const jz = Math.sin(t * 0.8 + jitter[i * 3 + 2]) * 0.012;
-
-        const x0 = p[0] + jx;
-        const y0 = p[1] + jy;
-        const z0 = p[2] + jz;
+        const x0 = cur[i3]! + Math.sin(t * 0.9 + jitter[i3]!) * 0.012;
+        const y0 = cur[i3 + 1]! + Math.sin(t * 1.1 + jitter[i3 + 1]!) * 0.012;
+        const z0 = cur[i3 + 2]! + Math.sin(t * 0.8 + jitter[i3 + 2]!) * 0.012;
 
         const x1 = x0 * cosY + z0 * sinY;
         const z1 = -x0 * sinY + z0 * cosY;
