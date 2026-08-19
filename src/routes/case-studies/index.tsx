@@ -67,7 +67,7 @@ export function CaseCard({ slug }: { slug: string }) {
             src={c.logo}
             alt={`${c.client} logo`}
             loading="lazy"
-            className="h-8 w-auto object-contain"
+            className="h-8 w-auto object-contain opacity-80 brightness-0"
           />
           <span className="rounded-full bg-surface-light-foreground/5 px-3 py-1 text-xs text-surface-light-muted">
             {c.industry}
