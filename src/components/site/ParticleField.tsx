@@ -54,17 +54,19 @@ export function ParticleField({ shape }: { shape: "handshake" | "cloud" }) {
     const frame = (now: number) => {
       const dt = Math.min((now - last) / 1000, 0.05);
       last = now;
-      if (!reduce) yaw += dt * 0.32;
+      // gentle oscillation instead of a full spin keeps each silhouette readable
+      if (!reduce) yaw += dt;
+      const swing = Math.sin(yaw * 0.35) * 0.75;
 
       const target = shapes[targetRef.current] ?? shapes["cloud"]!;
       const w = canvas.width;
       const h = canvas.height;
-      const scale = Math.min(w, h) * 0.42;
+      const scale = Math.min(w, h) * 0.52;
       const cx = w / 2;
       const cy = h / 2;
-      const cosY = Math.cos(yaw);
-      const sinY = Math.sin(yaw);
-      const tilt = 0.28;
+      const cosY = Math.cos(swing);
+      const sinY = Math.sin(swing);
+      const tilt = 0.22 + Math.sin(yaw * 0.22) * 0.08;
       const cosX = Math.cos(tilt);
       const sinX = Math.sin(tilt);
 
@@ -92,12 +94,12 @@ export function ParticleField({ shape }: { shape: "handshake" | "cloud" }) {
         const sy = cy - y1 * scale * persp;
 
         const depth = (z2 + 1) / 2; // 0 far .. 1 near
-        const r = (0.9 + depth * 1.5) * dpr * persp;
-        const alpha = 0.16 + depth * 0.7;
+        const r = (1 + depth * 1.7) * dpr * persp;
+        const alpha = 0.22 + depth * 0.78;
         ctx.fillStyle =
-          depth > 0.62
+          depth > 0.58
             ? `rgba(163, 240, 92, ${alpha})`
-            : `rgba(126, 214, 196, ${alpha * 0.75})`;
+            : `rgba(126, 214, 196, ${alpha * 0.8})`;
         ctx.beginPath();
         ctx.arc(sx, sy, r, 0, Math.PI * 2);
         ctx.fill();

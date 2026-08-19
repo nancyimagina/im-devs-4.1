@@ -89,17 +89,17 @@ function torusPoints(
 export function handshakeShape(count: number): Pt[] {
   const seed = { s: 20260819 };
   const out: Pt[] = [];
-  const per = Math.floor(count / 10);
-  // left forearm (coming from lower-left) and right forearm (upper-right)
-  out.push(...boxPoints(per * 2, [1.5, 0.42, 0.42], [-0.95, -0.34, 0], 0.28, seed));
-  out.push(...boxPoints(per * 2, [1.5, 0.42, 0.42], [0.95, 0.34, 0], 0.28, seed));
-  // clasped palms in the middle
-  out.push(...boxPoints(per * 2, [0.86, 0.72, 0.5], [0, 0, 0], 0.28, seed));
-  // wrapping fingers / thumbs
-  out.push(...torusPoints(per, 0.34, 0.09, [-0.12, 0.16, 0.02], [-1.5, 1.9], seed));
-  out.push(...torusPoints(per, 0.34, 0.09, [0.12, -0.16, -0.02], [1.6, 5.0], seed));
-  out.push(...torusPoints(per, 0.24, 0.07, [-0.2, -0.1, 0.16], [-1.2, 2.4], seed));
-  out.push(...torusPoints(per, 0.24, 0.07, [0.2, 0.1, -0.16], [1.9, 5.5], seed));
+  const per = Math.floor(count / 12);
+  // two forearms angled toward each other, meeting at a clasp in the middle
+  out.push(...boxPoints(per * 2.5, [1.35, 0.3, 0.34], [-0.86, -0.3, 0], 0.24, seed));
+  out.push(...boxPoints(per * 2.5, [1.35, 0.3, 0.34], [0.86, 0.3, 0], 0.24, seed));
+  // clasped palms: a chunky block rotated along the same axis
+  out.push(...boxPoints(per * 3, [0.78, 0.62, 0.46], [0, 0, 0], 0.24, seed));
+  // fingers wrapping over and under the clasp
+  out.push(...torusPoints(per, 0.33, 0.075, [-0.06, 0.12, 0.06], [-1.3, 1.7], seed));
+  out.push(...torusPoints(per, 0.33, 0.075, [0.06, -0.12, -0.06], [1.8, 4.8], seed));
+  out.push(...torusPoints(per, 0.26, 0.06, [-0.16, -0.02, 0.18], [-1.0, 2.1], seed));
+  out.push(...torusPoints(per, 0.26, 0.06, [0.16, 0.02, -0.18], [2.1, 5.2], seed));
   while (out.length < count) out.push(out[Math.floor(rnd(seed) * out.length)]!);
   return normalize(out.slice(0, count));
 }
