@@ -100,7 +100,7 @@ export function handshakeShape(count: number): Pt[] {
   out.push(...torusPoints(per, 0.34, 0.09, [0.12, -0.16, -0.02], [1.6, 5.0], seed));
   out.push(...torusPoints(per, 0.24, 0.07, [-0.2, -0.1, 0.16], [-1.2, 2.4], seed));
   out.push(...torusPoints(per, 0.24, 0.07, [0.2, 0.1, -0.16], [1.9, 5.5], seed));
-  while (out.length < count) out.push(out[Math.floor(rnd(seed) * out.length)]);
+  while (out.length < count) out.push(out[Math.floor(rnd(seed) * out.length)]!);
   return normalize(out.slice(0, count));
 }
 
@@ -133,6 +133,6 @@ export function cloudShape(count: number): Pt[] {
       if (!inside) out.push(p);
     }
   }
-  while (out.length < count) out.push(out[Math.floor(rnd(seed) * out.length)]);
+  while (out.length < count) out.push(out[Math.floor(rnd(seed) * out.length)]!);
   return normalize(out.slice(0, count));
 }
