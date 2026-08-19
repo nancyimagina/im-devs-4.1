@@ -74,9 +74,9 @@ export function ParticleField({ shape }: { shape: "handshake" | "cloud" }) {
       const ease = 1 - Math.pow(0.0025, dt);
       for (let i = 0; i < COUNT; i++) {
         const i3 = i * 3;
-        cur[i3] += (target[i3]! - cur[i3]!) * ease;
-        cur[i3 + 1] += (target[i3 + 1]! - cur[i3 + 1]!) * ease;
-        cur[i3 + 2] += (target[i3 + 2]! - cur[i3 + 2]!) * ease;
+        cur[i3] = cur[i3]! + (target[i3]! - cur[i3]!) * ease;
+        cur[i3 + 1] = cur[i3 + 1]! + (target[i3 + 1]! - cur[i3 + 1]!) * ease;
+        cur[i3 + 2] = cur[i3 + 2]! + (target[i3 + 2]! - cur[i3 + 2]!) * ease;
 
         const x0 = cur[i3]! + Math.sin(t * 0.9 + jitter[i3]!) * 0.012;
         const y0 = cur[i3 + 1]! + Math.sin(t * 1.1 + jitter[i3 + 1]!) * 0.012;
